@@ -1,0 +1,19 @@
+version: "3.7"
+
+services:
+  jira_integration:
+    command:
+      - gunicorn
+      - --log-level=debug
+      # - --error-logfile=/var/log/jira_integration/gunicorn.log
+      # - --access-logfile=/var/log/jira_integration/access.log
+      - --timeout=600
+      - --bind=0.0.0.0:5000
+      - jira_integration:app
+    environment:
+      MODE: production
+    volumes:
+      - logs:/var/log/jira_integration/
+
+volumes:
+  logs:

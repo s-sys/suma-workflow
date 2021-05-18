@@ -1,0 +1,37 @@
+version: "3.7"
+
+services:
+  jira_integration:
+    build: .
+    restart: unless-stopped
+    working_dir: /data/
+    command:
+      - gunicorn
+      - --log-level=info
+      - --timeout=60
+      - --bind=0.0.0.0:5000
+      - jira_integration:app
+    env_file:
+      - ./envs/jira.env
+      - ./envs/mysql.env
+      - ./envs/susemanager.env
+      - ./envs/salt.env
+    environment:
+      WEB_CONCURRENCY: 4
+    ports:
+      - 8305:5000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:13
+    restart: unless-stopped
+    ports:
+      - 65432:5432
+    env_file:
+      - ./envs/postgres.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
